@@ -1,0 +1,109 @@
+PNAD_COVID:
+LOAD 
+	 qtd_pessoas_teste, 
+     qtd_pessoas_positivo,
+     qtd_pessoas_frequenta_escola, 
+     qtd_pessoas_aula_presencial, 
+     qtd_pessoas_aula_n_presencial, 
+     qtd_pessoas_procurou_saude, 
+     qtd_pessoas_internada, 
+     qtd_pessoas_intubada, 
+     qtd_pessoas_plano_saude, 
+     qtd_pessoas_afastadas_trabalho,
+     qtd_pessoas_home_office,
+     qtd_pessoas, 
+     teste_covid, 
+     teste_swab, 
+     teste_furo_dedo, 
+     teste_veia, 
+     resultado_swab, 
+     resultado_furo_dedo, 
+     resultado_veia, 
+     mes, 
+     uf, 
+     idade, 
+     sexo, 
+     aula_presencial, 
+     escolaridade, 
+     consulta_saude, 
+     posto_saude, 
+     upa, 
+     hospital_sus, 
+     ambulatorio_privado, 
+     ps_privado, 
+     hospital_privado, 
+     internado, 
+     entubado, 
+     plano_saude, 
+     isolamento, 
+     afastamento_trabalho, 
+     motivo_afastamento, 
+     trabalho, 
+     ramo_trabalho, 
+     home_office, 
+     faixaidade, 
+     febre, 
+     tosse, 
+     dor_garganta, 
+     dificuldade_respirar, 
+     dor_cabeca, 
+     dor_peito, 
+     nausea, 
+     coriza, 
+     fadiga, 
+     dor_olhos, 
+     olfato_paladar, 
+     dor_muscular, 
+     diarreia, 
+     diabetes, 
+     hipertensao, 
+     doenca_pulmao, 
+     doenca_coracao, 
+     depresao, 
+     cancer, 
+     sabonete, 
+     alcool, 
+     mascara, 
+     luvas, 
+     agua_sanitaria
+
+FROM [C:\Users\eaoki\Downloads\PNAD_COVID.qvd](qvd);
+
+
+SINTOMAS:
+LOAD 
+	 sintomas, 
+     If(resultado = 'Sim', qtd_pessoas, 0)					as qtd_pessoas,
+     If(resultado = 'Sim', qtd_pessoas_positivo, 0)			as qtd_pessoas_positivo,
+     If(resultado = 'Sim', qtd_pessoas_teste, 0)				as qtd_pessoas_teste 
+
+FROM [C:\Users\eaoki\Downloads\PNAD_COVID_SINTOMAS_PIVOT.qvd](qvd);
+
+
+COMORBIDADE:
+LOAD 
+ 	 comorbidade,
+ 	 If(resultado = 'Sim', qtd_pessoas_internada, 0)		as qtd_pessoas_internada,
+ 	 If(resultado = 'Sim', qtd_pessoas_positivo, 0)			as qtd_pessoas_positivo,
+ 	 If(resultado = 'Sim', qtd_pessoas_intubada, 0)			as qtd_pessoas_intubada
+FROM
+[C:\Users\eaoki\Downloads\PNAD_COVID_COMORBIDADES.qvd](qvd);
+
+
+UNIDADE_SAUDE:
+LOAD 
+	 us														as unidade_saude,
+	 If(resultado = 'Sim', qtd_pessoas, 0)					as qtd_pessoas,
+	 If(resultado = 'Sim', qtd_pessoas_positivo, 0)			as qtd_pessoas_positivo,
+	 If(resultado = 'Sim', qtd_pessoas_teste, 0)			as qtd_pessoas_teste
+      
+FROM [C:\Users\eaoki\Downloads\PNAD_COVID_UND_SAUDE.qvd](qvd);
+
+
+PRODUTOS_LIMPEZA:
+LOAD
+     produto,
+     If(resultado = 'Sim', qtd_pessoas, 0)					as qtd_pessoas,
+     If(resultado = 'Sim', qtd_pessoas_positivo, 0)			as qtd_pessoas_positivo
+    
+FROM [C:\Users\eaoki\Downloads\PNAD_COVID_HIGIENE.qvd](qvd);

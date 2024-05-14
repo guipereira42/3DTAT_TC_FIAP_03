@@ -1,0 +1,169 @@
+PNAD_COVID:
+LOAD 
+	 If(teste_covid = 'Sim', qtd_pessoas, 0)																				AS qtd_pessoas_teste,
+	 If(resultado_swab = 'Positivo' or resultado_furo_dedo = 'Positivo' or resultado_veia = 'Positivo', qtd_pessoas, 0)		AS qtd_pessoas_positivo,
+	 If(frequenta_escola = 'Sim' and Wildmatch(aula_presencial, '*Sim*'), qtd_pessoas, 0)									AS qtd_pessoas_aula_presencial,			 
+	 If(frequenta_escola = 'Sim' and Wildmatch(aula_presencial, '*Não*'), qtd_pessoas, 0)									AS qtd_pessoas_aula_n_presencial,
+	 If(consulta_saude = 'Sim', qtd_pessoas, 0)																				AS qtd_pessoas_procurou_saude,
+	 If(internado = 'Sim', qtd_pessoas, 0)																					AS qtd_pessoas_internada,
+	 If(entubado = 'Sim', qtd_pessoas, 0)																					AS qtd_pessoas_intubada,
+	 If(plano_saude = 'Sim', qtd_pessoas, 0)																				AS qtd_pessoas_plano_saude,
+	 If(frequenta_escola = 'Sim', qtd_pessoas, 0)																			AS qtd_pessoas_frequenta_escola,
+	 If(afastamento_trabalho = 'Sim', qtd_pessoas, 0)																		AS qtd_pessoas_afastadas_trabalho,
+	 If(home_office = 'Sim', qtd_pessoas, 0)																				AS qtd_pessoas_home_office,
+	     
+	 qtd_pessoas, 
+     
+     teste_covid, 
+     teste_swab, 
+     teste_furo_dedo, 
+     teste_veia, 
+     resultado_swab, 
+     resultado_furo_dedo, 
+     resultado_veia, 
+     
+     mes, 
+     uf, 
+     idade, 
+     sexo, 
+     
+     frequenta_escola,
+     aula_presencial,
+     escolaridade, 
+           
+     consulta_saude, 
+     posto_saude, 
+     upa, 
+     hospital_sus, 
+     ambulatorio_privado, 
+     ps_privado, 
+     hospital_privado, 
+     
+     internado, 
+     entubado, 
+     
+     plano_saude, 
+     
+     afastamento_trabalho, 
+     home_office,
+     
+     motivo_afastamento, 
+     trabalho,
+     ramo_trabalho, 
+      
+     isolamento,
+     
+     faixaidade,
+     
+     febre, 
+     tosse, 
+     dor_garganta, 
+     dificuldade_respirar, 
+     dor_cabeca, 
+     dor_peito, 
+     nausea, 
+     coriza, 
+     fadiga, 
+     dor_olhos, 
+     olfato_paladar, 
+     dor_muscular, 
+     diarreia,
+     
+     diabetes, 
+     hipertensao, 
+     doenca_pulmao, 
+     doenca_coracao, 
+     depresao, 
+     cancer,
+     
+     sabonete, 
+     alcool, 
+     mascara, 
+     luvas, 
+     agua_sanitaria   
+
+FROM [C:\Users\eaoki\Downloads\vw_analise_respostas_202405131207.csv]
+(txt, utf8, embedded labels, delimiter is ',', msq);
+
+STORE PNAD_COVID INTO [C:\Users\eaoki\Downloads\PNAD_COVID.qvd](qvd);
+DROP TABLE PNAD_COVID;
+
+
+PNAD_COVID_SINTOMAS:
+CrossTable(sintoma, resultado, 3)
+LOAD 
+	 qtd_pessoas,
+	 qtd_pessoas_teste,
+	 qtd_pessoas_positivo, 
+     febre, 
+     tosse, 
+     dor_garganta, 
+     dificuldade_respirar, 
+     dor_cabeca, 
+     dor_peito, 
+     nausea, 
+     coriza, 
+     fadiga, 
+     dor_olhos, 
+     olfato_paladar, 
+     dor_muscular, 
+     diarreia 
+
+FROM [C:\Users\eaoki\Downloads\PNAD_COVID.qvd](qvd);
+
+STORE PNAD_COVID_SINTOMAS INTO [C:\Users\eaoki\Downloads\PNAD_COVID_SINTOMAS.qvd](qvd);
+DROP TABLE PNAD_COVID_SINTOMAS;
+
+
+PNAD_COVID_COMORBIDADES:
+CrossTable(comorbidade, resultado, 3)
+LOAD 
+	 qtd_pessoas,
+ 	 qtd_pessoas_teste,
+	 qtd_pessoas_positivo, 	  
+     diabetes, 
+     hipertensao, 
+     doenca_pulmao, 
+     doenca_coracao, 
+     depresao, 
+     cancer
+
+FROM [C:\Users\eaoki\Downloads\PNAD_COVID.qvd](qvd);
+
+STORE PNAD_COVID_COMORBIDADES INTO [C:\Users\eaoki\Downloads\PNAD_COVID_COMORBIDADES.qvd](qvd);
+DROP TABLE PNAD_COVID_COMORBIDADES;
+
+
+PNAD_COVID_UND_SAUDE:
+CrossTable(us, resultado, 3)
+LOAD 
+	 qtd_pessoas,
+ 	 qtd_pessoas_positivo,
+ 	 qtd_pessoas_teste,
+	 posto_saude, 
+     upa, 
+     hospital_sus, 
+     ambulatorio_privado, 
+     ps_privado, 
+     hospital_privado 
+
+FROM [C:\Users\eaoki\Downloads\PNAD_COVID.qvd](qvd);
+
+STORE PNAD_COVID_UND_SAUDE INTO [C:\Users\eaoki\Downloads\PNAD_COVID_UND_SAUDE.qvd](qvd);
+DROP TABLE PNAD_COVID_UND_SAUDE;
+
+
+PNAD_COVID_HIGIENE:
+CrossTable(produto, resultado)
+LOAD 
+	 qtd_pessoas,
+     sabonete, 
+     alcool, 
+     mascara, 
+     luvas, 
+     agua_sanitaria   
+
+FROM [C:\Users\eaoki\Downloads\PNAD_COVID.qvd](qvd);
+
+STORE PNAD_COVID_HIGIENE INTO [C:\Users\eaoki\Downloads\PNAD_COVID_HIGIENE.qvd](qvd);
+DROP TABLE PNAD_COVID_HIGIENE;

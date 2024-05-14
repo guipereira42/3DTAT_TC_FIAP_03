@@ -1,0 +1,192 @@
+-- ANÁLISE EXPLORATÓRIA
+
+--inicial
+create view vw_analise_respostas as  
+select
+	count(1)										as qtd_pessoas
+	,DAD.mes										as mes
+	,DAD.sigla_uf 									as uf
+	,DAD.a002 										as idade
+	,SEX.valor										as sexo
+	,ESC.valor 										as escolaridade
+	,coalesce(FRQ.valor,'Não Aplicável')			as frequenta_escola
+	,coalesce(AUL.valor,'Não Aplicável')			as aula_presencial
+	,coalesce(FEB.valor,'Ignorado')					as febre
+	,coalesce(TOS.valor,'Ignorado')					as tosse
+	,coalesce(GAR.valor,'Ignorado')					as dor_garganta
+	,coalesce(RES.valor,'Ignorado')					as dificuldade_respirar
+	,coalesce(CAB.valor,'Ignorado')					as dor_cabeca
+	,coalesce(PTO.valor,'Ignorado')					as dor_peito
+	,coalesce(NAU.valor,'Ignorado')					as nausea
+	,coalesce(NAR.valor,'Ignorado')					as coriza
+	,coalesce(FAD.valor,'Ignorado')					as fadiga
+	,coalesce(OLH.valor,'Ignorado')					as dor_olhos
+	,coalesce(OLF.valor,'Ignorado')					as olfato_paladar
+	,coalesce(MUS.valor,'Ignorado')					as dor_muscular
+	,coalesce(DIA.valor,'Ignorado')					as diarreia
+	,coalesce(EST.valor,'Não Aplicável')			as consulta_saude
+	,coalesce(POS.valor,'Não Aplicável')			as posto_saude
+	,coalesce(UPA.valor,'Não Aplicável')			as upa
+	,coalesce(HSUS.valor,'Não Aplicável')			as hospital_sus
+	,coalesce(ARM.valor,'Não Aplicável')			as ambulatorio_privado
+	,coalesce(FAR.valor,'Não Aplicável')			as ps_privado
+	,coalesce(PRI.valor,'Não Aplicável')			as hospital_privado
+	,coalesce(ITR.valor,'Não Aplicável')			as internado
+	,coalesce(ITB.valor,'Não Aplicável')			as intubado	
+	,coalesce(PLN.valor,'Não Aplicável')			as plano_saude
+	,coalesce(TST.valor,'Não Aplicável')			as teste_covid
+	,coalesce(SWB.valor,'Não Aplicável')			as teste_swab
+	,coalesce(FUR.valor,'Não Aplicável')			as teste_furo_dedo
+	,coalesce(VEI.valor,'Não Aplicável')			as teste_veia
+	,coalesce(RST.valor,'Não Aplicável')			as resultado_swab
+	,coalesce(RST_FUR.valor,'Não Aplicável')		as resultado_furo_dedo
+	,coalesce(RST_VEI.valor,'Não Aplicável')		as resultado_veia
+	,coalesce(DIB.valor,'Não Aplicável')			as diabetes
+	,coalesce(HIP.valor,'Não Aplicável')			as hipertensao
+	,coalesce(PUL.valor,'Não Aplicável')			as doenca_pulmao
+	,coalesce(COR.valor,'Não Aplicável')			as doenca_coracao
+	,coalesce(DEP.valor,'Não Aplicável')			as depresao
+	,coalesce(CNC.valor,'Não Aplicável')			as cancer
+	,CTP.valor										as isolamento
+	,coalesce(AFT.valor,'Não Aplicável')			as afastamento_trabalho
+	,coalesce(MAF.valor,'Não Aplicável')			as motivo_afastamento
+	,coalesce(TRB.valor,'Não Aplicável')			as trabalho
+	,coalesce(TTR.valor,'Não Aplicável')			as ramo_trabalho
+	,coalesce(HOM.valor,'Não Aplicável')			as home_office
+	,SAB.valor										as sabonete
+	,ALC.valor										as alcool
+	,MSC.valor										as mascara
+	,LUV.valor										as luvas
+	,ASD.valor										as agua_sanitaria
+	,case
+        when cast(DAD.a002 as integer) <= 15      then '15 anos ou menos'
+        when cast(DAD.a002 as integer) <= 30        then 'Entre 15 e 30 anos'
+        when cast(DAD.a002 as integer) <= 45        then 'Entre 30 e 45 anos'
+        when cast(DAD.a002 as integer) <= 60        then 'Entre 45 e 60 anos'
+        when cast(DAD.a002 as integer) > 60         then '60 anos ou mais'
+    else 
+        'Indefinido'
+    end as FaixaIdade
+		
+FROM public.br_ibge_pnad_covid_microdados DAD
+left join public.br_ibge_pnad_covid_dicionario SEX on DAD.a003 = SEX.chave and SEX.nome_coluna = 'a003'
+left join public.br_ibge_pnad_covid_dicionario ESC on DAD.a005 = ESC.chave and ESC.nome_coluna = 'a005'
+left join public.br_ibge_pnad_covid_dicionario FRQ on DAD.a006 = FRQ.chave and FRQ.nome_coluna = 'a006'
+left join public.br_ibge_pnad_covid_dicionario AUL on DAD.a006b = AUL.chave and AUL.nome_coluna = 'a006b'
+left join public.br_ibge_pnad_covid_dicionario FEB on DAD.b0011 = FEB.chave and FEB.nome_coluna = 'b0011'
+left join public.br_ibge_pnad_covid_dicionario TOS on DAD.b0012 = TOS.chave and TOS.nome_coluna = 'b0012'
+left join public.br_ibge_pnad_covid_dicionario GAR on DAD.b0013 = GAR.chave and GAR.nome_coluna = 'b0013'
+left join public.br_ibge_pnad_covid_dicionario RES on DAD.b0014 = RES.chave and RES.nome_coluna = 'b0014'
+left join public.br_ibge_pnad_covid_dicionario CAB on DAD.b0015 = CAB.chave and CAB.nome_coluna = 'b0015'
+left join public.br_ibge_pnad_covid_dicionario PTO on DAD.b0016 = PTO.chave and PTO.nome_coluna = 'b0016'
+left join public.br_ibge_pnad_covid_dicionario NAU on DAD.b0017 = NAU.chave and NAU.nome_coluna = 'b0017'
+left join public.br_ibge_pnad_covid_dicionario NAR on DAD.b0018 = NAR.chave and NAR.nome_coluna = 'b0018'
+left join public.br_ibge_pnad_covid_dicionario FAD on DAD.b0019 = FAD.chave and FAD.nome_coluna = 'b0019'
+left join public.br_ibge_pnad_covid_dicionario OLH on DAD.b00110 = OLH.chave and OLH.nome_coluna = 'b00110'
+left join public.br_ibge_pnad_covid_dicionario OLF on DAD.b00111 = OLF.chave and OLF.nome_coluna = 'b00111'
+left join public.br_ibge_pnad_covid_dicionario MUS on DAD.b00112 = MUS.chave and MUS.nome_coluna = 'b00112'
+left join public.br_ibge_pnad_covid_dicionario DIA on DAD.b00113 = DIA.chave and DIA.nome_coluna = 'b00113'
+left join public.br_ibge_pnad_covid_dicionario EST on DAD.b002 = EST.chave and EST.nome_coluna = 'b002'
+left join public.br_ibge_pnad_covid_dicionario POS on DAD.b0041 = POS.chave and  POS.nome_coluna = 'b0041'
+left join public.br_ibge_pnad_covid_dicionario UPA on DAD.b0042 = UPA.chave and  UPA.nome_coluna = 'b0042'
+left join public.br_ibge_pnad_covid_dicionario HSUS on DAD.b0043 = HSUS.chave and  HSUS.nome_coluna = 'b0043'
+left join public.br_ibge_pnad_covid_dicionario ARM on DAD.b0044 = ARM.chave and  ARM.nome_coluna = 'b0044'
+left join public.br_ibge_pnad_covid_dicionario FAR on DAD.b0045 = FAR.chave and  FAR.nome_coluna = 'b0045'
+left join public.br_ibge_pnad_covid_dicionario PRI on DAD.b0046 = PRI.chave and  PRI.nome_coluna = 'b0046'
+left join public.br_ibge_pnad_covid_dicionario ITR on DAD.b005 = ITR.chave and  ITR.nome_coluna = 'b005'
+left join public.br_ibge_pnad_covid_dicionario ITB on DAD.b006 = ITB.chave and  ITB.nome_coluna = 'b006'
+left join public.br_ibge_pnad_covid_dicionario PLN on DAD.b007 = PLN.chave and  PLN.nome_coluna = 'b007'
+left join public.br_ibge_pnad_covid_dicionario TST on DAD.b008 = TST.chave and  TST.nome_coluna = 'b008'
+left join public.br_ibge_pnad_covid_dicionario SWB on DAD.b009a = SWB.chave and  SWB.nome_coluna = 'b009a'
+left join public.br_ibge_pnad_covid_dicionario FUR on DAD.b009c = FUR.chave and  FUR.nome_coluna = 'b009c'
+left join public.br_ibge_pnad_covid_dicionario VEI on DAD.b009e = VEI.chave and  VEI.nome_coluna = 'b009e'
+left join public.br_ibge_pnad_covid_dicionario RST on DAD.b009b = RST.chave and  RST.nome_coluna = 'b009b'
+left join public.br_ibge_pnad_covid_dicionario RST_FUR on DAD.b009d = RST_FUR.chave and  RST_FUR.nome_coluna = 'b009d'
+left join public.br_ibge_pnad_covid_dicionario RST_VEI on DAD.b009f = RST_FUR.chave and  RST_VEI.nome_coluna = 'b009f'
+left join public.br_ibge_pnad_covid_dicionario DIB on DAD.b0101 = DIB.chave and  DIB.nome_coluna = 'b0101'
+left join public.br_ibge_pnad_covid_dicionario HIP on DAD.b0102 = HIP.chave and  HIP.nome_coluna = 'b0102'
+left join public.br_ibge_pnad_covid_dicionario PUL on DAD.b0103 = PUL.chave and  PUL.nome_coluna = 'b0103'
+left join public.br_ibge_pnad_covid_dicionario COR on DAD.b0104 = COR.chave and  COR.nome_coluna = 'b0104'
+left join public.br_ibge_pnad_covid_dicionario DEP on DAD.b0105 = DEP.chave and  DEP.nome_coluna = 'b0105'
+left join public.br_ibge_pnad_covid_dicionario CNC on DAD.b0106 = CNC.chave and  CNC.nome_coluna = 'b0106'
+left join public.br_ibge_pnad_covid_dicionario CTP on DAD.b011 = CTP.chave and  CTP.nome_coluna = 'b011'
+left join public.br_ibge_pnad_covid_dicionario AFT on DAD.c002 = AFT.chave and  AFT.nome_coluna = 'c002'
+left join public.br_ibge_pnad_covid_dicionario MAF on DAD.c003 = MAF.chave and  MAF.nome_coluna = 'c003'
+left join public.br_ibge_pnad_covid_dicionario TRB on DAD.c007 = TRB.chave and  TRB.nome_coluna = 'c007'
+left join public.br_ibge_pnad_covid_dicionario TTR on DAD.c007d = TTR.chave and  TTR.nome_coluna = 'c007d'
+left join public.br_ibge_pnad_covid_dicionario HOM on DAD.c013 = HOM.chave and  HOM.nome_coluna = 'c013'
+left join public.br_ibge_pnad_covid_dicionario SAB on DAD.f002a1 = SAB.chave and  SAB.nome_coluna = 'f002a1'
+left join public.br_ibge_pnad_covid_dicionario ALC on DAD.f002a2 = ALC.chave and  ALC.nome_coluna = 'f002a2'
+left join public.br_ibge_pnad_covid_dicionario MSC on DAD.f002a3 = MSC.chave and  MSC.nome_coluna = 'f002a3'
+left join public.br_ibge_pnad_covid_dicionario LUV on DAD.f002a4 = LUV.chave and  LUV.nome_coluna = 'f002a4'
+left join public.br_ibge_pnad_covid_dicionario ASD on DAD.f002a5 = ASD.chave and  ASD.nome_coluna = 'f002a5'
+
+where DAD.mes in (9,10,11)
+group by 
+	DAD.mes
+	,DAD.sigla_uf
+	,DAD.a002
+	,SEX.valor
+	,ESC.valor
+	,CTP.valor
+	,SAB.valor
+	,ALC.valor
+	,MSC.valor
+	,LUV.valor
+	,ASD.valor
+	,coalesce(FRQ.valor,'Não Aplicável')
+	,coalesce(AUL.valor,'Não Aplicável')
+	,coalesce(FEB.valor,'Ignorado')
+	,coalesce(TOS.valor,'Ignorado')
+	,coalesce(GAR.valor,'Ignorado')
+	,coalesce(RES.valor,'Ignorado')					
+	,coalesce(CAB.valor,'Ignorado')			
+	,coalesce(PTO.valor,'Ignorado')					
+	,coalesce(NAU.valor,'Ignorado')				
+	,coalesce(NAR.valor,'Ignorado')					
+	,coalesce(FAD.valor,'Ignorado')					
+	,coalesce(OLH.valor,'Ignorado')					
+	,coalesce(OLF.valor,'Ignorado')					
+	,coalesce(MUS.valor,'Ignorado')					
+	,coalesce(DIA.valor,'Ignorado')
+	,coalesce(EST.valor,'Não Aplicável')
+	,coalesce(POS.valor,'Não Aplicável')	
+	,coalesce(POS.valor,'Não Aplicável')	
+	,coalesce(UPA.valor,'Não Aplicável')	
+	,coalesce(HSUS.valor,'Não Aplicável')	
+	,coalesce(ARM.valor,'Não Aplicável')	
+	,coalesce(FAR.valor,'Não Aplicável')	
+	,coalesce(PRI.valor,'Não Aplicável')
+	,coalesce(ITR.valor,'Não Aplicável')
+	,coalesce(ITB.valor,'Não Aplicável')
+	,coalesce(PLN.valor,'Não Aplicável')
+	,coalesce(TST.valor,'Não Aplicável')
+	,coalesce(SWB.valor,'Não Aplicável')
+	,coalesce(FUR.valor,'Não Aplicável')
+	,coalesce(VEI.valor,'Não Aplicável')
+	,coalesce(RST.valor,'Não Aplicável')
+	,coalesce(RST_FUR.valor,'Não Aplicável')
+	,coalesce(RST_VEI.valor,'Não Aplicável')
+	,coalesce(DIB.valor,'Não Aplicável')
+	,coalesce(HIP.valor,'Não Aplicável')
+	,coalesce(PUL.valor,'Não Aplicável')
+	,coalesce(COR.valor,'Não Aplicável')
+	,coalesce(DEP.valor,'Não Aplicável')
+	,coalesce(CNC.valor,'Não Aplicável')
+	,coalesce(AFT.valor,'Não Aplicável')
+	,coalesce(MAF.valor,'Não Aplicável')
+	,coalesce(TRB.valor,'Não Aplicável')
+	,coalesce(TTR.valor,'Não Aplicável')
+	,coalesce(HOM.valor,'Não Aplicável')
+	,case
+        when cast(DAD.a002 as integer) <= 15      then '15 anos ou menos'
+        when cast(DAD.a002 as integer) <= 30        then 'Entre 15 e 30 anos'
+        when cast(DAD.a002 as integer) <= 45        then 'Entre 30 e 45 anos'
+        when cast(DAD.a002 as integer) <= 60        then 'Entre 45 e 60 anos'
+        when cast(DAD.a002 as integer) > 60         then '60 anos ou mais'
+    else 
+        'Indefinido'
+    end;
+
+	
+
